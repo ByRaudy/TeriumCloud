@@ -73,6 +73,8 @@ public abstract class TeriumExtension extends TeriumAPI {
     private final ModuleProvider moduleProvider;
     // Utils
     private final String thisName;
+    private final ICloudProvider cloudProvider;
+    private final ICloudFactory cloudFactory;
 
     protected TeriumExtension() {
         super();
@@ -92,26 +94,7 @@ public abstract class TeriumExtension extends TeriumAPI {
         this.eventProvider = new EventProvider();
         this.moduleProvider = new ModuleProvider();
 
-        thisName = System.getProperty("servicename");
-        teriumNetworking.sendPacket(new PacketPlayOutSuccessfullyServiceStarted(thisName, System.getProperty("servicenode")));
-        teriumNetworking.sendPacket(new PacketPlayOutCheckVersion(getProvider().getVersion()));
-    }
-
-    public void successfulStart() {
-        getProvider().getThisService().setServiceState(ServiceState.ONLINE);
-        getProvider().getThisService().update();
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getProvider().getThisService().setUsedMemory(usedMemory());
-                getProvider().getThisService().update();
-            }
-        }, 0, 2000);
-    }
-
-    @Override
-    public ICloudProvider getProvider() {
-        return new ICloudProvider() {
+        this.cloudProvider = new ICloudProvider() {
             @Override
             public ICloudService getThisService() {
                 return getServiceProvider().getServiceByName(thisName).orElseGet(null);
@@ -172,11 +155,7 @@ public abstract class TeriumExtension extends TeriumAPI {
                 return "2.0-FLUORINE-dev";
             }
         };
-    }
-
-    @Override
-    public ICloudFactory getFactory() {
-        return new ICloudFactory() {
+        this.cloudFactory = new ICloudFactory() {
             @Override
             public ICloudServiceFactory getServiceFactory() {
                 return serviceFactory;
@@ -197,6 +176,32 @@ public abstract class TeriumExtension extends TeriumAPI {
                 return commandFactory;
             }
         };
+
+        thisName = System.getProperty("servicename");
+        teriumNetworking.sendPacket(new PacketPlayOutSuccessfullyServiceStarted(thisName, System.getProperty("servicenode")));
+        teriumNetworking.sendPacket(new PacketPlayOutCheckVersion(getProvider().getVersion()));
+    }
+
+    public void successfulStart() {
+        getProvider().getThisService().setServiceState(ServiceState.ONLINE);
+        getProvider().getThisService().update();
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getProvider().getThisService().setUsedMemory(usedMemory());
+                getProvider().getThisService().update();
+            }
+        }, 0, 2000);
+    }
+
+    @Override
+    public ICloudProvider getProvider() {
+        return cloudProvider;
+    }
+
+    @Override
+    public ICloudFactory getFactory() {
+        return cloudFactory;
     }
 
     public long usedMemory() {

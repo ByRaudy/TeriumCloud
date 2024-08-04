@@ -3,7 +3,7 @@
   "name": "TeriumPlugin",
   "version": "2.0-FLUORINE-dev",
   "authors": [
-    "Jxnnik(ByRaudy)"
+    "Jxnnik(jxnnikdev)"
   ],
   "dependencies": [],
   "main": "cloud.terium.plugin.velocity.TeriumVelocityStartup"

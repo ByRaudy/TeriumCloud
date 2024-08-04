@@ -65,6 +65,6 @@
 
 Thanks to all persons who helped:
 
-- [ByRaudy (Jannik)](https://github.com/ByRaudy)
+- [jxnnikdev (Jannik)](https://github.com/jxnnikdev)
 - [TGamings](https://github.com/TGamings)
 - [MenschenToaster](https://github.com/MenschenToaster)

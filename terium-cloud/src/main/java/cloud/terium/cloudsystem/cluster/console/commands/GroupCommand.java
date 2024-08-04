@@ -207,8 +207,8 @@ public class GroupCommand extends Command {
             return;
         }
 
-        Logger.log("group create lobby/server [name] [version] [static] [memory] | create a lobby/server service group", LogType.INFO);
-        Logger.log("group create proxy [name] [version] [static] [memory] [port] | create a proxy service group", LogType.INFO);
+        Logger.log("group create lobby/server [name] [version] [static] [memory] (-node=NODE) | create a lobby/server service group", LogType.INFO);
+        Logger.log("group create proxy [name] [version] [static] [memory] [port] (-node=NODE) | create a proxy service group", LogType.INFO);
         Logger.log("group delete [name] | delete a service group", LogType.INFO);
         Logger.log("group info [name] (--json) | see all informations about a service group", LogType.INFO);
         Logger.log("group update [name] [maintenance/version/static/memory/maxplayers/minservices/maxservices] [value] (--shutdown) | update a service group", LogType.INFO);
@@ -238,15 +238,15 @@ public class GroupCommand extends Command {
             }
             case 4 -> {
                 if (args[1].equals("lobby") || args[1].equals("server"))
-                    return Arrays.stream(ServerVersions.values()).map(ServerVersions::getName).filter(name -> name.startsWith("paper") || name.startsWith("purpur")).toList();
+                    return Arrays.stream(ServerVersions.values()).map(ServerVersions::getName).filter(name -> !name.startsWith("velocity")).filter(name -> !name.startsWith("bungeecord")).toList();
                 if (args[1].equals("proxy"))
-                    return Arrays.stream(ServerVersions.values()).map(ServerVersions::getName).filter(name -> !name.startsWith("paper")).filter(name -> !name.startsWith("purpur")).toList();
+                    return Arrays.stream(ServerVersions.values()).map(ServerVersions::getName).filter(name -> name.startsWith("velocity") || name.startsWith("bungeecord")).toList();
 
                 if (args[0].equalsIgnoreCase("update")) {
                     if (args[2].equalsIgnoreCase("maintenance") || args[2].equalsIgnoreCase("static"))
                         return Arrays.asList("true", "false");
                     else if (args[2].equalsIgnoreCase("version"))
-                        return Arrays.stream(ServerVersions.values()).map(ServerVersions::getName).filter(name -> name.startsWith("paper")).toList();
+                        return Arrays.stream(ServerVersions.values()).map(ServerVersions::getName).toList();
                 }
 
                 if (args[0].equalsIgnoreCase("add")) {

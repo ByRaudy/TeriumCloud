@@ -77,8 +77,6 @@ public class ClusterStartup extends TeriumAPI {
     private final ModuleProvider moduleProvider;
     private final TemplateFactory templateFactory;
     private final INode thisNode;
-    private final ICloudProvider cloudProvider;
-    private final ICloudFactory cloudFactory;
     private CloudConfig cloudConfig;
     private ConfigManager configManager;
 
@@ -121,7 +119,61 @@ public class ClusterStartup extends TeriumAPI {
         this.moduleProvider = new ModuleProvider();
         this.commandManager = new CommandManager();
         this.consoleManager = new ConsoleManager(commandManager);
-        this.cloudProvider = new ICloudProvider() {
+
+        ClusterStartup.getCluster().getCloudConfig().nodes().keySet().forEach(key -> this.networking.getAllowedAddresses().add(ClusterStartup.getCluster().getCloudConfig().nodes().get(key).getAsJsonObject().get("ip").getAsString()));
+        this.networking.getAllowedAddresses().add(thisNode.getAddress().getAddress().getHostAddress());
+        this.networking.getAllowedAddresses().add(cloudConfig.ip());
+
+        if (cloudConfig.checkUpdate()) {
+            Logger.log("Trying to download 'teriumcloud-plugin.jar'...");
+            try {
+                FileUtils.copyURLToFile(new URL("https://terium.cloud/utils/teriumcloud-plugin.jar"), new File("data//versions//teriumcloud-plugin.jar"));
+                Logger.log("Successfully to downloaded 'teriumcloud-plugin.jar'.");
+            } catch (Exception exception) {
+                Logger.log("Download of latest teriumcloud-plugin.jar is failed.");
+            }
+        }
+
+        Logger.log("Starting phase §6two §fof the startup...", LogType.INFO);
+        Thread.sleep(2000);
+
+        consoleManager.clearScreen();
+        Logger.clearAllLoggedMessags();
+        Logger.log("""
+                §f_______ _______  ______ _____ _     _ _______ §b_______         _____  _     _ ______\s
+                §f   |    |______ |_____/   |   |     | |  |  | §b|       |      |     | |     | |     \\
+                §f   |    |______ |    \\_ __|__ |_____| |  |  | §b|_____  |_____ |_____| |_____| |_____/ §7[§f%version%§7]
+                                                                                            \s
+                §7> §fTerium by jxnnikdev(Jannik H.) §7& §fveteex(Niklas S.)\s
+                §7> §fDiscord: §bterium.cloud/discord §f| Twitter: §b@teriumcloud§f
+                                
+                 §a> §fLoaded %commands% commands successfully.
+                 §a> §fLoaded %templates% templates successfully.
+                 §a> §fLoaded %groups% groups successfully.
+                 §a> §fLoaded %loaded_nodes% nodes successfully.
+                 §a> §fStarted terium-server on %ip%:%port%.
+                                
+                """.replace("%version%", TeriumCloud.getTerium().getCloudUtils().getVersion()).replace("%templates%", templateProvider.getAllTemplates().size() + "").replace("%commands%", commandManager.getBuildedCommands().keySet().size() + "")
+                .replace("%ip%", cloudConfig.ip()).replace("%port%", cloudConfig.port() + "").replace("%loaded_nodes%", nodeProvider.getAllNodes().stream().filter(node -> node != thisNode).toList().size() + "")
+                .replace("%groups%", serviceGroupProvider.getAllServiceGroups().size() + ""));
+        this.moduleProvider.loadModules();
+
+        Signal.handle(new Signal("INT"), signal -> {
+            TeriumCloud.getTerium().getCloudUtils().setRunning(false);
+            shutdownCloud();
+        });
+
+        serviceProvider.startServiceCheck();
+        serviceProvider.startServiceStopCheck();
+    }
+
+    public boolean isDebugMode() {
+        return cloudConfig.debugMode();
+    }
+
+    @Override
+    public ICloudProvider getProvider() {
+        return new ICloudProvider() {
             @Override
             public ICloudService getThisService() {
                 return null;
@@ -182,7 +234,11 @@ public class ClusterStartup extends TeriumAPI {
                 return TeriumCloud.getTerium().getCloudUtils().getVersion();
             }
         };
-        this.cloudFactory = new ICloudFactory() {
+    }
+
+    @Override
+    public ICloudFactory getFactory() {
+        return new ICloudFactory() {
             @Override
             public ICloudServiceFactory getServiceFactory() {
                 return serviceFactory;
@@ -203,66 +259,6 @@ public class ClusterStartup extends TeriumAPI {
                 return commandManager;
             }
         };
-
-        ClusterStartup.getCluster().getCloudConfig().nodes().keySet().forEach(key -> this.networking.getAllowedAddresses().add(ClusterStartup.getCluster().getCloudConfig().nodes().get(key).getAsJsonObject().get("ip").getAsString()));
-        this.networking.getAllowedAddresses().add(thisNode.getAddress().getAddress().getHostAddress());
-        this.networking.getAllowedAddresses().add(cloudConfig.ip());
-
-        if (cloudConfig.checkUpdate()) {
-            Logger.log("Trying to download 'teriumcloud-plugin.jar'...");
-            try {
-                FileUtils.copyURLToFile(new URL("https://terium.cloud/utils/teriumcloud-plugin.jar"), new File("data//versions//teriumcloud-plugin.jar"));
-                Logger.log("Successfully to downloaded 'teriumcloud-plugin.jar'.");
-            } catch (Exception exception) {
-                Logger.log("Download of latest teriumcloud-plugin.jar is failed.");
-            }
-        }
-
-        Logger.log("Starting phase §6two §fof the startup...", LogType.INFO);
-        Thread.sleep(2000);
-
-        consoleManager.clearScreen();
-        Logger.clearAllLoggedMessags();
-        Logger.log("""
-                §f_______ _______  ______ _____ _     _ _______ §b_______         _____  _     _ ______\s
-                §f   |    |______ |_____/   |   |     | |  |  | §b|       |      |     | |     | |     \\
-                §f   |    |______ |    \\_ __|__ |_____| |  |  | §b|_____  |_____ |_____| |_____| |_____/ §7[§f%version%§7]
-                                                                                            \s
-                §7> §fTerium by jxnnikdev(Jannik H.) §7& §fveteex(Niklas S.)\s
-                §7> §fDiscord: §bterium.cloud/discord §f| Twitter: §b@teriumcloud§f
-                                
-                 §a> §fLoaded %commands% commands successfully.
-                 §a> §fLoaded %templates% templates successfully.
-                 §a> §fLoaded %groups% groups successfully.
-                 §a> §fLoaded %loaded_nodes% nodes successfully.
-                 §a> §fStarted terium-server on %ip%:%port%.
-                                
-                """.replace("%version%", TeriumCloud.getTerium().getCloudUtils().getVersion()).replace("%templates%", templateProvider.getAllTemplates().size() + "").replace("%commands%", commandManager.getBuildedCommands().keySet().size() + "")
-                .replace("%ip%", cloudConfig.ip()).replace("%port%", cloudConfig.port() + "").replace("%loaded_nodes%", nodeProvider.getAllNodes().stream().filter(node -> node != thisNode).toList().size() + "")
-                .replace("%groups%", serviceGroupProvider.getAllServiceGroups().size() + ""));
-        this.moduleProvider.loadModules();
-
-        Signal.handle(new Signal("INT"), signal -> {
-            TeriumCloud.getTerium().getCloudUtils().setRunning(false);
-            shutdownCloud();
-        });
-
-        serviceProvider.startServiceCheck();
-        serviceProvider.startServiceStopCheck();
-    }
-
-    public boolean isDebugMode() {
-        return cloudConfig.debugMode();
-    }
-
-    @Override
-    public ICloudProvider getProvider() {
-        return cloudProvider;
-    }
-
-    @Override
-    public ICloudFactory getFactory() {
-        return cloudFactory;
     }
 
     @SneakyThrows

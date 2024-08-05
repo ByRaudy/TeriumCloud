@@ -36,13 +36,13 @@ public class ConfigManager {
             json.addProperty("full_kick.message", "<gradient:#245dec:#00d4ff><bold>ᴡᴡᴡ.ᴛᴇʀɪᴜᴍ.ᴄʟᴏᴜᴅ</bold></gradient> \n \n <red>This service is full. \n <red>You can't join without permission.");
             json.addProperty("maintenance.message", "<gradient:#245dec:#00d4ff><bold>ᴡᴡᴡ.ᴛᴇʀɪᴜᴍ.ᴄʟᴏᴜᴅ</bold></gradient> \n \n <red>This service is under maintenance. \n <red>More information: https://terium.cloud/documentation");
             json.addProperty("tablist_header", "\n <gradient:#245dec:#00d4ff>Terium</gradient> <dark_gray>⇨ <white>a modern cloudsystem <gray>[<white>2.0-FLUORINE-dev<gray>] \n <white>You're connected with <#e2adf7>%server% \n");
-            json.addProperty("tablist_footer", "\n <white>Terium by <#41dbfa>ByRaudy <white>and <#69e2fa>contributors <red>❤ \n <gradient:#245dec:#00d4ff>ᴡᴡᴡ.ᴛᴇʀɪᴜᴍ.ᴄʟᴏᴜᴅ</gradient> \n");
+            json.addProperty("tablist_footer", "\n <white>Terium by <#41dbfa>jxnnikdev <white>and <#69e2fa>contributors <red>❤ \n <gradient:#245dec:#00d4ff>ᴡᴡᴡ.ᴛᴇʀɪᴜᴍ.ᴄʟᴏᴜᴅ</gradient> \n");
             json.addProperty("motd.line1", "<gradient:#245dec:#00d4ff>Terium</gradient> <dark_gray>⇨ <white>a modern cloudsystem <gray>[<white>2.0-FLUORINE-dev<gray>]");
-            json.addProperty("motd.line2", "<gray>› <white>Terium by <#41dbfa>ByRaudy <white>and <#69e2fa>contributors <red>❤");
+            json.addProperty("motd.line2", "<gray>› <white>Terium by <#41dbfa>jxnnikdev <white>and <#69e2fa>contributors <red>❤");
             json.addProperty("motd.maintenance.line1", "<gradient:#245dec:#00d4ff>Terium</gradient> <dark_gray>⇨ <white>a modern cloudsystem <gray>[<white>2.0-FLUORINE-dev<gray>]");
             json.addProperty("motd.maintenance.line2", "<gray>› <red>This service is under maintenance.");
             JsonArray whitelist = new JsonArray();
-            whitelist.add("ByRaudy");
+            whitelist.add("jxnnikdev");
             whitelist.add("nurjannik");
             json.add("whitelist", whitelist);
 

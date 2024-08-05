@@ -60,6 +60,7 @@ import java.time.format.DateTimeFormatter;
 @Setter
 public class ClusterStartup extends TeriumAPI {
 
+    @Getter
     private static ClusterStartup cluster;
     private final CommandManager commandManager;
     private final ConsoleManager consoleManager;
@@ -87,7 +88,7 @@ public class ClusterStartup extends TeriumAPI {
                 §f   |    |______ |_____/   |   |     | |  |  | §b|       |      |     | |     | |     \\
                 §f   |    |______ |    \\_ __|__ |_____| |  |  | §b|_____  |_____ |_____| |_____| |_____/ §7[§f%version%§7]
                                                                                             \s
-                §7> §fTerium by ByRaudy(Jannik H.) §7& §fveteex(Niklas S.)\s
+                §7> §fTerium by jxnnikdev(Jannik H.) §7& §fveteex(Niklas S.)\s
                 §7> §fDiscord: §bterium.cloud/discord §f| Twitter: §b@teriumcloud§f
                 """.replace("%version%", TeriumCloud.getTerium().getCloudUtils().getVersion()));
         Logger.log(("[" + DateTimeFormatter.ofPattern("HH:mm:ss").format(LocalDateTime.now()) + "\u001B[0m] " + LogType.INFO.getPrefix() + "Welcome to terium-cloud!"));
@@ -143,7 +144,7 @@ public class ClusterStartup extends TeriumAPI {
                 §f   |    |______ |_____/   |   |     | |  |  | §b|       |      |     | |     | |     \\
                 §f   |    |______ |    \\_ __|__ |_____| |  |  | §b|_____  |_____ |_____| |_____| |_____/ §7[§f%version%§7]
                                                                                             \s
-                §7> §fTerium by ByRaudy(Jannik H.) §7& §fveteex(Niklas S.)\s
+                §7> §fTerium by jxnnikdev(Jannik H.) §7& §fveteex(Niklas S.)\s
                 §7> §fDiscord: §bterium.cloud/discord §f| Twitter: §b@teriumcloud§f
                                 
                  §a> §fLoaded %commands% commands successfully.
@@ -164,10 +165,6 @@ public class ClusterStartup extends TeriumAPI {
 
         serviceProvider.startServiceCheck();
         serviceProvider.startServiceStopCheck();
-    }
-
-    public static ClusterStartup getCluster() {
-        return cluster;
     }
 
     public boolean isDebugMode() {

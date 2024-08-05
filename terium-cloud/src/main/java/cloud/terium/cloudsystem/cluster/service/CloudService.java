@@ -274,6 +274,12 @@ public class CloudService implements ICloudService {
     public void toggleScreen() {
         if (!TeriumCloud.getTerium().getCloudUtils().isInScreen()) {
             ClusterStartup.getCluster().getConsoleManager().clearScreen();
+
+            if (process == null) {
+                Logger.log("Process is not initialized.", LogType.ERROR);
+                return;
+            }
+
             outputThread = new Thread(() -> {
                 String line = null;
                 BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
